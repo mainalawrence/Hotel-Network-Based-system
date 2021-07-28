@@ -1,0 +1,678 @@
+import QtQuick 2.0
+import QtQuick.Controls 1.4
+import QtQuick.Controls 2.5
+import QtQuick.Layouts 1.3
+import QtQuick.Dialogs 1.2
+import QtQuick.Controls.Styles 1.4
+import pos 1.0
+import "Clock"
+
+
+Page
+{
+    SalesViewModel{
+        id:salesviewmodel
+    }
+    ReturnViewModel{
+        id:returnViewModel
+    }
+
+    property bool toolB: true
+    property bool manageview: false
+    property bool cashviewtype: false
+    property bool crediteviewtype: false
+    property bool mpesaviewtype: false
+    property bool reportviewtype: false
+    property bool gohomebtnproperty: false
+    //the property for the sales details
+    property double amount:salesviewmodel.ui_Totalcost
+    WaiterModelView{
+        id:waiterModelView
+    }
+
+    property int returns: 50
+    id:cashierWindow
+    anchors.margins: 20
+    header: ToolBar{
+        id:toolbar
+        visible: toolB
+        spacing: 10
+        background: Rectangle{
+            Clock{
+                id:id_root
+            }
+            Label{
+                id:headertimedatelbl
+                anchors.centerIn: parent
+                text:Qt.formatTime(id_root.currentDate,"h:m:s ap")
+                font.pixelSize:16;
+            }
+            Label{
+                id:headerusernamelbl
+                text:masterController.ui_message  // user name from the database
+                anchors.leftMargin: 100
+                anchors.right: headertimedatelbl.left
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.rightMargin: 100
+                font.pixelSize: 16
+                font.capitalization:Font.MixedCase
+            }
+
+            color: "gray"
+            height:cashierWindow.height/8
+            ToolButton{
+                visible:gohomebtnproperty
+                onClicked:
+                {
+                    reportviewtype=false
+                    gohome();}
+                text: "\u25C0"
+
+                contentItem: Text{
+                    text: parent.text
+                    font.pixelSize: cashierWindow.height>50?70:35
+                    anchors.centerIn: parent
+                    color: "red"
+                }
+            }
+
+            RowLayout{
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 5
+                anchors.margins: 100
+                ComboBox{
+                    id:waiterid
+                    displayText:currentText
+                    visible: reportviewtype
+                    model:waiterModelView
+                    delegate:ItemDelegate{
+                        width: parent.width
+                        Text{
+                        text:model.name
+                        MouseArea{
+                            anchors.fill: parent
+                            onClicked: console.log( model.idNumber)
+                        }
+                     }
+                    }
+                }
+                Button{
+                    id:btnreport
+                    text: "Rearch"
+                    height: waiterid.height
+                    onClicked: {
+                        gohomebtnproperty=true
+                        reportviewtype=true
+                        mainview.replace(report)}
+                    contentItem: Text{
+                        anchors.centerIn: btnreport.Center
+                        anchors.verticalCenter: btnreport.verticalCenter
+                        text: btnreport.text
+                        font.pixelSize:12
+                        color: "green"
+                    }
+                    background: Rectangle{
+                        radius: 10
+                        height: parent.height
+                        width: parent.width
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    StackView{
+        id:mainview
+        anchors.fill: parent
+        initialItem: mainpage
+    }
+    Page{
+        id:mainpage
+
+        Frame{
+            id:salesview
+            clip: true
+            anchors.left: parent.left
+            anchors.topMargin: toolbar.height+100
+            anchors.top: parent.top
+            height: cashierWindow.height/2
+            width: cashierWindow.width/2+cashierWindow.height/4
+            background:Rectangle{
+                anchors.fill: parent
+                border.color: "green"
+                border.width:1
+            }
+                Row{
+                    anchors.fill: parent
+                    //"Item's Name" "Item's Cost" "Amount" "itemtotalcost"
+                    Rectangle{
+                        height: parent.height
+                        width: parent.width/2-10
+                        ListView{
+                            anchors.fill: parent
+                            spacing: 10
+                            model:salesviewmodel
+                            clip: true
+                            delegate:salesviewdelegate
+                        }
+                    }
+                    Rectangle{
+                        height:parent.height
+                        width:parent.width/2
+                       Text{
+                           text:"Total cost:shs "+ amount
+                           font.pixelSize: 20
+                           anchors.centerIn:parent.centerIn
+                       }
+                    }
+            }
+
+                Component{
+                    id:salesviewdelegate
+                    Rectangle{
+                        color: "white"
+                        height: 40
+                        width: parent.width/2-50
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: "black"
+                            font.bold: true
+                            font.pixelSize: 16
+                            text:model.name +"  "+model.cost +"  "+model.amount+"  "+model.total
+                        }
+                    }
+                }
+        }
+        Frame{
+            id:orderview
+            clip: true
+            anchors.topMargin: toolbar.height+100
+            anchors.left: salesview.right
+            anchors.right: parent.right
+            anchors.leftMargin: 100
+            anchors.top: parent.top
+            anchors.rightMargin: 20
+            height:cashierWindow.height/2
+            background:Rectangle{
+                anchors.fill: parent
+                border.color: "red"
+                border.width:1
+            }
+            SalesCat{
+                id:salescat
+            }
+            ListView{
+                id:oderview
+                clip: true
+                spacing: 5
+                anchors.fill:parent
+                focus: true
+                delegate: oderviewdelegate
+                model:salescat
+                width:oderview.width
+                height: cashierWindow.height-toolbar.height
+                highlight: Rectangle{ width:parent.width;height: 60;color: "Red"}
+            }
+            Component{
+                id:cashdelegate
+                Rectangle{
+                    width: 100
+                    height: 100
+                    color: "green"
+                }
+            }
+            Component{
+                id:oderviewdelegate
+                Rectangle{
+                    id:oderdelegatebtn
+                    height: 50
+                    width:parent.width-40
+                    color: "gray"
+                    Text{
+                        anchors.centerIn: parent
+                        color: "white"
+                        text:model.tablName+"  "+model.waiterId
+                        font.pixelSize:16
+                    }
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked:{
+                            console.log(model.orderlist)
+                            salescat.remove( JSON.parse( model.index))
+
+                        }
+                    }
+                }
+            }
+        }
+        Frame{
+            anchors.top: salesview.bottom
+            anchors.right: parent.right
+            anchors.topMargin: 10
+            id:footer
+            height:50
+            width: cashierWindow.width
+            background:Rectangle{
+                anchors.fill: parent
+                border.color: "white"
+                border.width:1
+                Row{
+                    spacing: 10
+                    anchors.leftMargin:salesview.width/4 ;
+                    anchors.rightMargin:30;
+                    anchors.fill: parent
+                    Button{
+                        text: "Cash"
+                        onClicked: {
+                            mainview.replace(cashpage)
+                            toolB=false
+                            manageview=true
+                            cashviewtype=true
+                        }
+                    }
+                    Button{
+                        text: "Mpesa"
+                        onClicked: {
+                            mpesapayemnetdialog.open()
+                            // mainview.replace(mpesapage)
+                            toolB=true
+                            manageview=false
+                            mpesaviewtype=false
+                        }
+                        Dialog {
+                            id:mpesapayemnetdialog
+
+                            height: 150
+                            width: 300
+                            title: "Enter code"
+
+                            Label{
+                                id:dialogdatelbl
+                                text: "6/4/2020\n9:30Am"
+                                width: parent.width
+                                anchors.horizontalCenter:parent.horizontalCenter
+                                anchors.top: parent.top
+                            }
+                            TextField{
+                                id:dialogeAmount
+                                anchors.horizontalCenter:parent.horizontalCenter
+                                anchors.top: dialogdatelbl.bottom
+                                width: parent.width
+                                placeholderText: "Enter Amount"
+                            }
+
+                            TextField{
+                                anchors.horizontalCenter:parent.horizontalCenter
+                                anchors.top: dialogeAmount.bottom
+                                width: parent.width
+                                placeholderText: "Enter code"
+                            }
+                            standardButtons: Dialog.Ok | Dialog.Discard
+
+                            onAccepted: console.log("Ok clicked")
+                            onDiscard: console.log("Discard clicked")
+                        }
+                    }
+                    Button{
+
+                        id:creditbtn
+                        text: "Return Order"
+                        onClicked: {
+                            mainview.replace(creditepage)
+                            toolB=false
+                            manageview=true
+                            crediteviewtype=true
+                        }
+
+                    }
+                }
+            }
+        }
+        Page{
+            id:cashpage
+            visible:cashviewtype
+            property string amountEntered:"0"
+
+
+            Rectangle{
+                id:maincashpageRectangle
+                visible:cashviewtype
+                anchors.fill: parent
+                anchors.margins: 100
+                //color: "red"
+                height: 200
+                width: 400
+                Row{
+                    spacing: 20
+                    Item{
+                        id:calculatercKeys
+                        height: maincashpageRectangle.height
+                        width: maincashpageRectangle.width/2-20
+                        Column{
+                            anchors.topMargin: 30
+                            anchors.centerIn: parent
+                            spacing: 30
+                            Frame{
+                                height: maincashpageRectangle.height
+                                width: maincashpageRectangle.width/2-20
+                                background: Rectangle {
+                                    height: parent.height
+                                    width: parent.width
+                                    color: "transparent"
+                                    border.color: "transparent"
+
+                                }
+                                padding: 100
+                                topPadding: 350/2
+
+                                Column{
+                                    spacing:5
+                                    TextField{
+                                        id:amoutdisplaytxt
+                                        width:btntest.width*3+20
+                                        height: 50
+                                        text: cashpage.amountEntered
+                                        padding: 5
+                                        horizontalAlignment: Text.AlignRight
+                                        verticalAlignment:Text.AlignVCenter
+                                        background: Rectangle{
+                                            color: "black"
+                                        }
+                                        font.pixelSize:19
+                                        color: "white"
+                                    }
+                                    Row{
+                                        spacing: 10
+                                        Button{text: "7" ;height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(7)}
+                                        Button{text: "8";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked: cashpage.getAmount(8)}
+                                        Button{text: "9";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(9)}
+                                    }
+                                    Row{
+                                        spacing: 10
+                                        Button{text: "4";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(4)}
+                                        Button{text: "5";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(5)}
+                                        Button{text: "6";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(6)}
+                                    }
+                                    Row{
+                                        spacing: 10
+                                        Button{text: "1";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(1)}
+                                        Button{text: "2";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(2)}
+                                        Button{text: "3";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(3)}
+                                    }
+                                    Row{
+                                        spacing: 10
+                                        Button{id:btntest;text: ".";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked: cashpage.getAmount(".")}
+                                        Button{text: "0";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.getAmount(0)}
+                                        Button{text: "C";height:50 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                                horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                            onClicked:cashpage.amountEntered="0.0"}
+                                    }
+                                    Row{
+                                        Button{
+                                            id:btnEnter
+                                            text: "Enter"
+                                            height: btntest.height
+                                            width: btntest.width*3 +20
+                                            contentItem: Text{
+                                                anchors.fill: parent
+                                                text:btnEnter.text
+                                                font.pixelSize: 16
+                                                font.bold:true
+                                                horizontalAlignment:Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                            }
+                                            background: Rectangle{
+                                                id:btnEnterRec
+                                                anchors.fill: parent
+                                                color: "gray"
+                                                radius: 10
+                                            }
+                                            onClicked: {
+                                                mainview.replace(mainpage)
+                                                btnEnterRec.color="red"
+                                                toolB=true
+                                                console.log(parseInt(amoutdisplaytxt.text,10)-1)
+                                            }
+                                        }
+                                    }}}
+                            //here
+                            Frame{
+                                background: Rectangle{
+                                    color: "transparent"
+                                    border.color: "transparent"
+                                }
+                                Row{
+                                    anchors.topMargin: 50
+                                    spacing: 10
+                                    Button{text: "1000";height:40 ;width:80;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                            horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                        onClicked:cashpage.getAmountInInteger(1000)}
+                                    Button{text: "500";height:40 ;width:80;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                            horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                        onClicked:cashpage.getAmountInInteger(500)}
+                                    Button{text: "200";height:40 ;width:80;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                            horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                        onClicked:cashpage.getAmountInInteger(200)}
+                                    Button{text: "100";height:40 ;width:80;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                            horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                        onClicked:cashpage.getAmountInInteger(100)}
+                                    Button{text: "50";height:40 ;width:80;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                            horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+                                        onClicked:cashpage.getAmountInInteger(50)}
+                                }
+                            }
+                        }
+                    }
+                    Frame{
+                        height:maincashpageRectangle.height
+                        width: maincashpageRectangle.width/2-20
+                        background: Rectangle{
+                            border.color: "red"
+                            color: "Transparent"
+                        }
+                    }
+                }
+            }
+            function getAmount(x){
+
+                if(cashpage.amountEntered==="0.0"){
+                    cashpage.amountEntered=0;
+                }
+                amountEntered+=x;
+            }
+            function getAmountInInteger(x){
+                if(cashpage.amountEntered==="0.0"| ""){amountEntered=0}
+                let AmountInInt=parseInt(amountEntered,10);
+                AmountInInt+=x;
+                amountEntered=AmountInInt;
+            }
+        }
+        Page{
+            id:mpesapage
+            visible:mpesaviewtype
+            Rectangle{
+                id:mpesamainRect
+                visible: manageview
+                anchors.fill: parent
+                color: "green"
+                height: 200
+                width: 200
+                Row{
+                    spacing: 10
+                    Frame{
+                        height: mpesamainRect.height
+                        width: mpesamainRect.width/2
+                        background:Rectangle{
+                            border.color: "Transparent"
+                            color: "white"
+                        }
+                        Item{
+                            anchors{
+                                horizontalCenter: parent.horizontalCenter
+                                top: parent.top
+                            }
+
+                            Column{
+                                Label{
+                                    text: "Code"
+                                }
+                                TextField{
+                                    color: "black"
+                                    font.pixelSize: 16
+                                }
+                                Button{
+                                    text: "Enter"
+                                    ;height:40 ;width:100;contentItem:Text{anchors.fill: parent; font.pixelSize:16; verticalAlignment:Text.AlignVCenter;
+                                        horizontalAlignment: Text.AlignHCenter;text: parent.text }background: Rectangle{anchors.fill: parent;radius: 7;color: "gray";height: parent.height;width: parent.width}
+
+                                }
+                            }
+                        }
+
+                    }
+                    Frame{
+                        height: mpesamainRect.height
+                        width: mpesamainRect.width/2
+                        background:Rectangle{
+                            border.color: "Transparent"
+                            color: "white"
+                        }
+                    }
+                }
+
+
+                Button{
+                    text: "mpesapage"
+                    anchors.centerIn: parent
+                    onClicked: {
+                        mainview.replace(mainpage)
+                        toolB=true
+                        manageview=false
+                    }
+                }
+            }
+        }
+        Page{
+            id:creditepage
+            visible:crediteviewtype
+            Frame{
+                anchors.centerIn:parent
+                height:parent.height-parent.height/4
+                width:parent.width-400
+                clip: true
+                Rectangle{
+                    anchors.centerIn:parent
+                    height:parent.height-50
+                    width:parent.width-400
+                    anchors.horizontalCenter: parent.horizontalCenter
+                ListView{
+                   anchors.fill: parent
+                    model: returnViewModel
+                    spacing: 5
+                    delegate: returnViewdelegate
+                }
+}
+
+                Button{
+                    id:submitreturns
+                    text: "Enter"
+                    anchors.horizontalCenter: parent.horizontalCenter;
+                    anchors.bottom: parent.bottom
+                    onClicked: {
+                        gohome()
+                    }
+                }
+                Component{
+                    id:returnViewdelegate
+                    Row{
+                        spacing:15
+                        Row{spacing: 2
+                            Label{clip:truncated ;text:model.name; topPadding:13;Text{anchors.centerIn: parent}}
+                            Button{text:"-"
+                                onClicked:{returnViewModel.decreseAmount(model.index,model.name,model.cost,model.amount,model.tax)
+                                }
+                                }
+                            Rectangle{id:recamount;clip:true;height:40; width:30;Text{anchors.centerIn: parent; text:model.amount}}
+                            Button{text:"+"
+                                onClicked:{returnViewModel.increaseAmount(model.index,model.name,model.cost,model.amount,model.tax);
+                                }
+                               /* style: ButtonStyle {background: Rectangle {implicitWidth:45;implicitHeight:40; radius: 5;border.color: "#000"}
+                                    Text {anchors.centerIn: parent;font.pixelSize:16;font.bold:true}}*/}
+                        }
+                        Button{text:"Del";
+                            onClicked: returnViewModel.removefromCat(model.index)
+                           /* style: ButtonStyle {background: Rectangle { implicitWidth:45; implicitHeight:40;radius: 5 ;border.color: "#000"
+                                }Text { anchors.centerIn: parent; font.pixelSize:16 ;font.bold:true}}*/}
+                    }
+                }
+
+            }
+
+        }
+        Page{
+            id:report
+
+            Item{
+                visible: reportviewtype
+                anchors.fill: parent
+                Rectangle{
+                    id:rectroot
+                    anchors.centerIn: parent
+                    height: parent.height/2+200
+                    width: parent.width/2+200
+                    TableView{
+                        id: view
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        clip: true
+                        model: 200
+                        TableViewColumn {
+                            role: "title"
+                            title: "Title"
+                            width: 200
+                        }
+                        TableViewColumn {
+                            role: "author"
+                            title: "Author"
+                            width: 200
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    function gohome(){
+        mainview.replace(mainpage);
+        gohomebtnproperty=false
+    }
+    function retunfunction(x){
+        returns+=x
+    }
+
+}

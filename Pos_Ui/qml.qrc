@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/Views">
+        <file alias="main.qml">Views/main.qml</file>
+        <file alias="Login.qml">Views/Login.qml</file>
+        <file alias="Waiter.qml">Views/Waiter.qml</file>
+        <file alias="Manager.qml">Views/Manager.qml</file>
+        <file alias="CashierWindow.qml">Views/CashierWindow.qml</file>
+        <file alias="UserViewModel.qml">Views/UserViewModel.qml</file>
+        <file alias="Clock/HourNeedle.qml">Views/clock/HourNeedle.qml</file>
+        <file alias="Clock/MinutesNeedle.qml">Views/clock/MinutesNeedle.qml</file>
+        <file alias="Clock/SecondNeedle.qml">Views/clock/SecondNeedle.qml</file>
+        <file alias="ReportView.qml">Views/ReportView.qml</file>
+        <file alias="ReturnsView.qml">Views/ReturnsView.qml</file>
+        <file alias="Settingsview.qml">Views/Settingsview.qml</file>
+        <file alias="StockItems.qml">Views/StockItems.qml</file>
+        <file alias="Sales.qml">Views/Sales.qml</file>
+        <file alias="UserClockin.qml">Views/UserClockin.qml</file>
+        <file alias="Cat.qml">Views/Cat.qml</file>
+        <file alias="Clock/Clock.qml">Views/clock/Clock.qml</file>
+        <file alias="WaiterDailyBarSales.qml">Views/WaiterDailyBarSales.qml</file>
+        <file alias="WaiterDailyRestReturns.qml">Views/WaiterDailyRestReturns.qml</file>
+        <file alias="WaiterDailyRestSales.qml">Views/WaiterDailyRestSales.qml</file>
+        <file alias="WaiterDailyBarReturns.qml">Views/WaiterDailyBarReturns.qml</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>BasicFunctions.js</file>
+    </qresource>
+</RCC>

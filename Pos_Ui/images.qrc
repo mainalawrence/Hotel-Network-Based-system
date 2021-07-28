@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="clock (2).png">images/clock (2).png</file>
+        <file alias="clock.png">images/clock.png</file>
+        <file alias="close.png">images/close.png</file>
+        <file alias="Employe.png">images/Employe.png</file>
+        <file alias="fileprint.png">images/fileprint.png</file>
+        <file alias="hotel.jpeng">images/hotel.jpeng</file>
+        <file alias="icons8-clock-16.png">images/icons8-clock-16.png</file>
+        <file alias="login_bg.png">images/login_bg.png</file>
+        <file alias="logo.png">images/logo.png</file>
+        <file alias="restart_icon.png">images/restart_icon.png</file>
+        <file alias="Settings-icon.png">images/Settings-icon.png</file>
+        <file alias="shutdown_icon.png">images/shutdown_icon.png</file>
+        <file alias="stop.png">images/stop.png</file>
+        <file alias="wall-clock.png">images/wall-clock.png</file>
+        <file alias="remove.png">images/remove.png</file>
+        <file alias="reply-arrow.png">images/reply-arrow.png</file>
+        <file alias="home.png">images/home.png</file>
+        <file alias="delete.png">images/delete.png</file>
+        <file alias="back.png">images/back.png</file>
+        <file alias="minus.png">images/minus.png</file>
+        <file alias="fineremove - Copy.png">images/fineremove - Copy.png</file>
+        <file alias="whiteremove.png">images/whiteremove.png</file>
+        <file alias="icons8-employee-80 - Copy.png">images/icons8-employee-80 - Copy.png</file>
+        <file alias="icons8-settings-24.png.png">images/settings.png</file>
+        <file alias="tools.png">images/tools.png</file>
+        <file alias="fileprint.png">images/fileprint.png</file>
+    </qresource>
+</RCC>

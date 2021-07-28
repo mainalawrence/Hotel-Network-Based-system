@@ -1,0 +1,43 @@
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include<QtQuickControls2>
+#include<QQmlContext>
+//controls
+#include<Controller/mastercontroller.h>
+#include<Controller/navigation-controller.h>
+#include<Controller/database_controller.h>
+//data
+#include<Data/Data_collection.h>
+#include<Data/string_data.h>
+
+//models
+#include<Models/pos_users.h>
+#include<Models/stockdetails.h>
+
+int main(int argc, char *argv[])
+{
+
+    // qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    QGuiApplication app(argc, argv);
+
+    qmlRegisterType<Controller::MasterController>("pos",1,0,"Mastercontroller");
+    qmlRegisterType<Controller::NavigationController>("pos", 1, 0,"NavigationController");
+
+    qmlRegisterType<Data::String_Data>("pos", 1, 0,"String_Data");
+    qmlRegisterType<Data::Int_data>("pos", 1, 0,"Int_data");
+
+    qmlRegisterType<Models::Pos_Users>("pos", 1, 0,"Pos_Users");
+    qmlRegisterType<Models::StockDetails>("pos", 1, 0,"StockDetails");
+    qmlRegisterType<Models::sale>("pos",1,0,"sales");
+
+    Controller::MasterController MasterController;
+
+    QQmlApplicationEngine engine;
+    QQuickStyle::setStyle("Material");
+    engine.rootContext()->setContextProperty("masterController",&MasterController);
+    engine.load(QUrl(QStringLiteral("qrc:/Views/main.qml")));
+    return app.exec();
+}
